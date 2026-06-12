@@ -4,25 +4,26 @@ module.exports = {
     // ===== API KEYS =====
     apiKey: process.env.BINANCE_API_KEY,
     apiSecret: process.env.BINANCE_API_SECRET,
-    useTestnet: true,
+    useTestnet: true,  // Passer à false pour le réel
     
     // ===== PARAMÈTRES DE TRADING =====
     symbol: "BTCUSDT",
-    interval: "5m",
+    interval: "1h",          // Timeframe 1 heure
     
-    // ===== GESTION DES RISQUES (RATIO 1:1) =====
-    tradingCapital: 50,
-    riskPercent: 0.5,        // 0.25$ par trade
-    stopLoss: 1.5,           // 1.5%
-    takeProfit: 1.5,         // 1.5% (identique)
+    // ===== GESTION DES RISQUES =====
+    tradingCapital: 50,      // Capital de départ
+    riskPerTrade: 0.02,      // 2% du capital par trade (1$)
+    stopLossATR: 2,          // Stop Loss = 2 × ATR
+    takeProfitATR: 3,        // Take Profit = 3 × ATR
     
     // ===== STRATÉGIE =====
-    minScoreToTrade: 65,
-    cooldown: 30000,
+    minConfidence: 5,        // Confiance minimum (1-10)
+    enableShort: true,       // Activer les shorts
+    pyramiding: 1,           // Max positions simultanées
     
-    // ===== FILTRE ATR =====
-    useATRFilter: true,
-    atrMinRatio: 0.5,
+    // ===== COOLDOWN =====
+    cooldown: 30000,         // 30 secondes entre les trades
     
-    debug: false
+    // ===== DEBUG =====
+    debug: true
 };
