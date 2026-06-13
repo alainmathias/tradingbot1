@@ -167,7 +167,7 @@ class TradingSystem {
 
 // === STRATÉGIE POUR TEST (force les trades en alternance) ===
 // Alterne entre BUY et SELL toutes les 30 minutes
-const now = Date.now();
+/*const now = Date.now();
 const cycle = Math.floor(now / 60000) % 2;  // Change toutes les minutes
 
 if (cycle === 0) {
@@ -182,7 +182,10 @@ if (cycle === 0) {
 // === FIN ZONE TEST ===
 
 
-        
+        */
+
+
+
         // Si pas de signal forcé, utiliser la stratégie normale
         if (signal === 'NONE') {
             if (trend.trend.includes('BULLISH')) {
