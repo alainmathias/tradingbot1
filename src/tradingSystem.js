@@ -1,4 +1,4 @@
-// tradingSystem.js - Version optimisée pour bot en direct
+// tradingSystem.js - Version corrigée
 class TradingSystem {
     constructor(candles, config) {
         this.candles = candles;
@@ -161,63 +161,56 @@ class TradingSystem {
         let confidence = 0;
         let reasons = [];
         
-        // Stratégie
-        if (trend.trend.includes('BULLISH')) {
-            // Signal d'achat
-            const buyPattern = patterns.find(p => p.signal === 'BUY' && p.strength >= 7);
-            if (buyPattern) {
-                signal = 'BUY';
-                confidence = Math.min(10, 7 + trend.strength / 2);
-                reasons.push(`${buyPattern.type} détecté`);
-            } else if (rsi < 35) {
-                signal = 'BUY';
-                confidence = 6;
-                reasons.push(`RSI à ${rsi.toFixed(1)} (survendu)`);
-            }
-            
-            
-            else if (rsi < 60){
-            
-            
+        // === STRATÉGIE POUR TEST (décommente pour forcer les trades) ===
+        // TEMPORAIRE : Force BUY si RSI < 60 et tendance haussière
+        if (trend.trend.includes('BULLISH') && rsi < 60 && rsi > 35) {
             signal = 'BUY';
-                confidence = 6;
-                reasons.push(`RSI à ${rsi.toFixed(1)} (survendu)`);
-            
-            }
-            
-            
-            // Vérifier surachat
-            if (rsi > 70 && confidence > 5) {
-                confidence -= 2;
-                reasons.push('RSI surachat');
-            }
+            confidence = 7;
+            reasons.push(`RSI à ${rsi.toFixed(1)} (zone test)`);
         }
-        else if (trend.trend.includes('BEARISH')) {
-            // Signal de vente
-            const sellPattern = patterns.find(p => p.signal === 'SELL' && p.strength >= 7);
-            if (sellPattern) {
-                signal = 'SELL';
-                confidence = Math.min(10, 7 + trend.strength / 2);
-                reasons.push(`${sellPattern.type} détecté`);
-            } else if (rsi > 65) {
-                signal = 'SELL';
-                confidence = 6;
-                reasons.push(`RSI à ${rsi.toFixed(1)} (suracheté)`);
-            }
-            else if (rsi > 40) {
-            
+        // TEMPORAIRE : Force SELL si RSI > 40 et tendance baissière
+        else if (trend.trend.includes('BEARISH') && rsi > 40 && rsi < 65) {
             signal = 'SELL';
-                confidence = 6;
-                reasons.push(`RSI à ${rsi.toFixed(1)} (suracheté)`);
-            
+            confidence = 7;
+            reasons.push(`RSI à ${rsi.toFixed(1)} (zone test)`);
+        }
+        // === FIN ZONE TEST ===
+        
+        // Si pas de signal forcé, utiliser la stratégie normale
+        if (signal === 'NONE') {
+            if (trend.trend.includes('BULLISH')) {
+                const buyPattern = patterns.find(p => p.signal === 'BUY' && p.strength >= 7);
+                if (buyPattern) {
+                    signal = 'BUY';
+                    confidence = Math.min(10, 7 + trend.strength / 2);
+                    reasons.push(`${buyPattern.type} détecté`);
+                } else if (rsi < 35) {
+                    signal = 'BUY';
+                    confidence = 6;
+                    reasons.push(`RSI à ${rsi.toFixed(1)} (survendu)`);
+                }
+                
+                if (rsi > 70 && confidence > 5) {
+                    confidence -= 2;
+                    reasons.push('RSI surachat');
+                }
             }
-            
-            
-            
-            // Vérifier survente
-            if (rsi < 30 && confidence > 5) {
-                confidence -= 2;
-                reasons.push('RSI survente');
+            else if (trend.trend.includes('BEARISH')) {
+                const sellPattern = patterns.find(p => p.signal === 'SELL' && p.strength >= 7);
+                if (sellPattern) {
+                    signal = 'SELL';
+                    confidence = Math.min(10, 7 + trend.strength / 2);
+                    reasons.push(`${sellPattern.type} détecté`);
+                } else if (rsi > 65) {
+                    signal = 'SELL';
+                    confidence = 6;
+                    reasons.push(`RSI à ${rsi.toFixed(1)} (suracheté)`);
+                }
+                
+                if (rsi < 30 && confidence > 5) {
+                    confidence -= 2;
+                    reasons.push('RSI survente');
+                }
             }
         }
         
@@ -226,12 +219,12 @@ class TradingSystem {
             signal = 'NONE';
         }
         
-        // Calculer SL et TP basés sur ATR
+        // Calculer SL et TP
         let stopLoss = 0;
         let takeProfit = 0;
         
         if (signal !== 'NONE') {
-            const atrValue = Math.max(atr, currentPrice * 0.005); // Min 0.5%
+            const atrValue = Math.max(atr, currentPrice * 0.005);
             
             if (signal === 'BUY') {
                 stopLoss = currentPrice - atrValue * this.config.stopLossATR;
@@ -242,12 +235,15 @@ class TradingSystem {
             }
         }
         
-        // Logs
-        if (this.config.debug && signal !== 'NONE') {
-            console.log(`\n🎯 SIGNAL ${signal}`);
-            console.log(`   Confiance: ${confidence}/10`);
+        // Logs détaillés
+        console.log(`\n🔍 VÉRIFICATION:`);
+        console.log(`   Trend: ${trend.trend} | RSI: ${rsi.toFixed(1)}`);
+        console.log(`   Signal: ${signal} | Confiance: ${confidence}/${this.config.minConfidence}`);
+        console.log(`   Patterns: ${patterns.map(p => p.type).join(', ') || 'aucun'}`);
+        
+        if (signal !== 'NONE') {
+            console.log(`   🎯 ${signal} déclenché !`);
             console.log(`   Raisons: ${reasons.join(', ')}`);
-            console.log(`   ATR: ${atr.toFixed(2)} | RSI: ${rsi.toFixed(1)}`);
             console.log(`   SL: ${stopLoss.toFixed(2)} | TP: ${takeProfit.toFixed(2)}`);
         }
         
@@ -263,16 +259,7 @@ class TradingSystem {
             trend: trend.trend,
             patterns: patterns.map(p => p.type)
         };
-        
-        
-        // Dans generateSignal(), à la fin, ajoute :
-console.log(`\n🔍 VÉRIFICATION FINALE:`);
-console.log(`   Signal: ${signal}`);
-console.log(`   Confiance: ${confidence}/${this.config.minConfidence}`);
-console.log(`   RSI: ${rsi.toFixed(1)} (seuil BUY: <35, SELL: >65)`);
-console.log(`   Patterns trouvés: ${patterns.map(p => p.type).join(', ') || 'aucun'}`);
     }
-    
 }
 
 module.exports = TradingSystem;
