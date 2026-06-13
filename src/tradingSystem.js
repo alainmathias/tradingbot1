@@ -175,6 +175,17 @@ class TradingSystem {
                 reasons.push(`RSI à ${rsi.toFixed(1)} (survendu)`);
             }
             
+            
+            else if (rsi < 60){
+            
+            
+            signal = 'BUY';
+                confidence = 6;
+                reasons.push(`RSI à ${rsi.toFixed(1)} (survendu)`);
+            
+            }
+            
+            
             // Vérifier surachat
             if (rsi > 70 && confidence > 5) {
                 confidence -= 2;
@@ -193,6 +204,15 @@ class TradingSystem {
                 confidence = 6;
                 reasons.push(`RSI à ${rsi.toFixed(1)} (suracheté)`);
             }
+            else if (rsi > 40) {
+            
+            signal = 'SELL';
+                confidence = 6;
+                reasons.push(`RSI à ${rsi.toFixed(1)} (suracheté)`);
+            
+            }
+            
+            
             
             // Vérifier survente
             if (rsi < 30 && confidence > 5) {
