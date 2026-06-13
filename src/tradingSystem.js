@@ -243,7 +243,16 @@ class TradingSystem {
             trend: trend.trend,
             patterns: patterns.map(p => p.type)
         };
+        
+        
+        // Dans generateSignal(), à la fin, ajoute :
+console.log(`\n🔍 VÉRIFICATION FINALE:`);
+console.log(`   Signal: ${signal}`);
+console.log(`   Confiance: ${confidence}/${this.config.minConfidence}`);
+console.log(`   RSI: ${rsi.toFixed(1)} (seuil BUY: <35, SELL: >65)`);
+console.log(`   Patterns trouvés: ${patterns.map(p => p.type).join(', ') || 'aucun'}`);
     }
+    
 }
 
 module.exports = TradingSystem;
