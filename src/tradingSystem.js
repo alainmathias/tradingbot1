@@ -161,20 +161,27 @@ class TradingSystem {
         let confidence = 0;
         let reasons = [];
         
-        // === STRATÉGIE POUR TEST (décommente pour forcer les trades) ===
-        // TEMPORAIRE : Force BUY si RSI < 60 et tendance haussière
-        if (trend.trend.includes('BULLISH') && rsi < 80 && rsi > 35) {
-            signal = 'BUY';
-            confidence = 7;
-            reasons.push(`RSI à ${rsi.toFixed(1)} (zone test)`);
-        }
-        // TEMPORAIRE : Force SELL si RSI > 40 et tendance baissière
-        else if (trend.trend.includes('BEARISH') && rsi > 40 && rsi < 65) {
-            signal = 'SELL';
-            confidence = 7;
-            reasons.push(`RSI à ${rsi.toFixed(1)} (zone test)`);
-        }
-        // === FIN ZONE TEST ===
+        
+
+
+
+// === STRATÉGIE POUR TEST (force les trades en alternance) ===
+// Alterne entre BUY et SELL toutes les 30 minutes
+const now = Date.now();
+const cycle = Math.floor(now / 60000) % 2;  // Change toutes les minutes
+
+if (cycle === 0) {
+    signal = 'BUY';
+    confidence = 8;
+    reasons.push(`TEST - force BUY (cycle minute paire)`);
+} else {
+    signal = 'SELL';
+    confidence = 8;
+    reasons.push(`TEST - force SELL (cycle minute impaire)`);
+}
+// === FIN ZONE TEST ===
+
+
         
         // Si pas de signal forcé, utiliser la stratégie normale
         if (signal === 'NONE') {
