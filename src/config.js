@@ -11,8 +11,8 @@ module.exports = {
     interval: "1h",          // Timeframe 1 heure
     
     // ===== GESTION DES RISQUES =====
-    tradingCapital: 500,      // Capital de départ
-    riskPerTrade: 0.005,      // 2% du capital par trade (1$)
+    tradingCapital: 50,      // Capital de départ
+    riskPerTrade: 0.02,      // 2% du capital par trade (1$)
     stopLossATR: 2,          // Stop Loss = 2 × ATR
     takeProfitATR: 3,        // Take Profit = 3 × ATR
     
