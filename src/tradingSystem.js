@@ -163,7 +163,7 @@ class TradingSystem {
         
         // === STRATÉGIE POUR TEST (décommente pour forcer les trades) ===
         // TEMPORAIRE : Force BUY si RSI < 60 et tendance haussière
-        if (trend.trend.includes('BULLISH') && rsi < 60 && rsi > 35) {
+        if (trend.trend.includes('BULLISH') && rsi < 80 && rsi > 35) {
             signal = 'BUY';
             confidence = 7;
             reasons.push(`RSI à ${rsi.toFixed(1)} (zone test)`);
